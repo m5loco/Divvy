@@ -1,0 +1,101 @@
+"from_station_id","count...","cust_v_subs","station_name","total_docks","longitude","latitude"
+3,26432,3,"Shedd Aquarium",55,-87.61535539,41.867225957
+6,17153,2,"Dusable Harbor",39,-87.612813,41.886976
+13,15524,0,"Wilton Ave & Diversey Pkwy",35,-87.652705,41.932418
+18,16287,0,"Wacker Dr & Washington St",19,-87.637321,41.883132
+21,12140,0,"Aberdeen St & Jackson Blvd",23,-87.65478743,41.87772613
+24,20602,0,"Fairbanks Ct & Grand Ave",15,-87.620580196,41.891847372
+26,20063,0,"McClurg Ct & Illinois St",31,-87.617532,41.890359
+31,14523,0,"Franklin St & Chicago Ave",23,-87.635667622,41.896746973
+35,67983,3,"Streeter Dr & Grand Ave",47,-87.612043,41.892278
+36,19379,0,"Franklin St & Jackson Blvd",39,-87.635321141,41.877707956
+38,16075,0,"Clark St & Lake St",27,-87.630876058,41.886020828
+43,37696,0,"Michigan Ave & Washington St",43,-87.624683976,41.883984065
+44,19768,0,"State St & Randolph St",27,-87.627733569,41.884730201
+47,18947,0,"State St & Kinzie St",31,-87.627754,41.889187
+48,22721,0,"Larrabee St & Kingsbury St",43,-87.642884,41.897764
+49,20493,0,"Dearborn St & Monroe St",39,-87.629520919,41.881319815
+50,12127,0,"Clark St & Ida B Wells Dr",35,-87.630584536,41.875932666
+51,15751,0,"Clark St & Randolph St",39,-87.63188991,41.884576228
+52,22807,0,"Michigan Ave & Lake St",35,-87.624117,41.886024
+53,24169,0,"Wells St & Huron St",27,-87.634362,41.894722
+56,21957,0,"Desplaines St & Kinzie St",27,-87.644447853,41.888716036
+58,14854,0,"Marshfield Ave & Cortland St",23,-87.668879,41.916017
+59,19717,0,"Wabash Ave & Roosevelt Rd",23,-87.625961,41.867227
+66,23382,0,"Clinton St & Lake St",23,-87.641823,41.885637
+67,18056,0,"Sheffield Ave & Fullerton Ave",27,-87.653708042,41.925601882
+69,19632,0,"Damen Ave & Pierce Ave",23,-87.677691929,41.909396007
+71,17793,0,"Morgan St & Lake St",23,-87.652304856,41.885483308
+74,18946,0,"Kingsbury St & Erie St",23,-87.641697228,41.893808056
+76,49804,3,"Lake Shore Dr & Monroe St",39,-87.616743,41.880958
+77,49908,0,"Clinton St & Madison St",31,-87.641066,41.882242
+81,33875,0,"Daley Center Plaza",39,-87.629634,41.884241
+84,15315,0,"Milwaukee Ave & Grand Ave",19,-87.648384,41.891578
+85,35449,1,"Michigan Ave & Oak St",23,-87.62377664,41.90096039
+90,34106,1,"Millennium Park",47,-87.62408432,41.8810317
+91,48153,0,"Clinton St & Washington Blvd",31,-87.64117,41.88338
+94,21489,0,"Clark St & Armitage Ave",31,-87.636282,41.918306
+99,14442,0,"Lake Shore Dr & Ohio St",19,-87.614492,41.89257
+100,23944,0,"Orleans St & Merchandise Mart Plaza",35,-87.63639,41.888243
+107,13792,0,"Desplaines St & Jackson Blvd",27,-87.643909,41.878287
+110,24131,0,"Dearborn St & Erie St",27,-87.629318,41.893992
+111,14402,0,"Sedgwick St & Huron St",27,-87.638437,41.894666
+112,14079,0,"Green St & Randolph St",15,-87.64867,41.883668
+113,14889,0,"Bissell St & Armitage Ave",15,-87.65222,41.91844
+114,12131,1,"Sheffield Ave & Waveland Ave",27,-87.654529,41.949399
+115,12219,0,"Sheffield Ave & Wellington Ave",23,-87.652662,41.936266
+117,18766,0,"Wilton Ave & Belmont Ave",27,-87.65304,41.94018
+118,13941,0,"Sedgwick St & North Ave",19,-87.638677,41.911386
+127,13418,0,"Lincoln Ave & Fullerton Ave",15,-87.64926,41.925905
+133,33102,0,"Kingsbury St & Kinzie St",31,-87.638505772,41.889176833
+134,13471,0,"Peoria St & Jackson Blvd",19,-87.649617791,41.877641596
+140,16893,0,"Dearborn Pkwy & Delaware Pl",19,-87.629912,41.898969
+141,19665,0,"Clark St & Lincoln Ave",23,-87.6346,41.915689
+142,15726,0,"McClurg Ct & Erie St",31,-87.617854,41.894503
+144,12583,0,"Larrabee St & Webster Ave",19,-87.64414,41.921822
+145,14402,0,"Mies van der Rohe Way & Chestnut St",19,-87.621915226,41.898586651
+157,12379,0,"Lake Shore Dr & Wellington Ave",15,-87.636829019,41.936688449
+161,13873,0,"Rush St & Superior St",23,-87.625908033,41.895764746
+164,15685,0,"Franklin St & Lake St",27,-87.6355,41.885837
+172,12854,0,"Rush St & Cedar St",11,-87.627690528,41.902308701
+173,12648,0,"Mies van der Rohe Way & Chicago Ave",15,-87.621743,41.89691
+174,29831,0,"Canal St & Madison St",35,-87.639833,41.882091
+176,25633,0,"Clark St & Elm St",39,-87.63128,41.902973
+177,32001,1,"Theater on the Lake",31,-87.630834,41.926277
+181,18407,0,"LaSalle St & Illinois St",31,-87.631697,41.890762
+182,15389,0,"Wells St & Elm St",23,-87.634324,41.903222
+191,16115,0,"Canal St & Monroe St",27,-87.63953,41.88169
+192,54389,0,"Canal St & Adams St",47,-87.639904,41.879255
+195,39192,0,"Columbus Dr & Randolph St",55,-87.619521,41.884728
+196,14774,0,"Cityfront Plaza Dr & Pioneer Ct",31,-87.622072,41.890573
+198,16458,0,"Green St & Madison St",27,-87.648789,41.881892
+199,24534,0,"Wabash Ave & Grand Ave",31,-87.626761,41.891466
+210,18969,0,"Ashland Ave & Division St",27,-87.667747,41.90345
+211,21872,0,"St. Clair St & Erie St",19,-87.622663,41.894448
+212,20497,0,"Wells St & Hubbard St",31,-87.634266,41.889906
+220,12776,0,"Clark St & Drummond Pl",23,-87.644336,41.931248
+229,12537,0,"Southport Ave & Roscoe St",19,-87.66402,41.943739
+240,12372,0,"Sheridan Rd & Irving Park Rd",27,-87.654406,41.954245
+241,13549,0,"Morgan St & Polk St",19,-87.65103,41.871737
+249,13593,1,"Montrose Harbor",31,-87.638181,41.963982
+255,20951,0,"Indiana Ave & Roosevelt Rd",39,-87.623041,41.867888
+264,12895,0,"Stetson Ave & South Water St",19,-87.62232,41.886835
+268,34472,1,"Lake Shore Dr & North Blvd",39,-87.626804,41.911722
+283,25378,0,"LaSalle St & Jackson Blvd",35,-87.631929,41.878166
+284,15541,0,"Michigan Ave & Jackson Blvd",23,-87.62408,41.87785
+287,34297,0,"Franklin St & Monroe St",31,-87.635185,41.880317
+289,22972,0,"Wells St & Concord Ln",19,-87.634656,41.912133
+291,14797,0,"Wells St & Evergreen Ave",19,-87.63483,41.906724
+300,17677,0,"Broadway & Barry Ave",19,-87.644095,41.937725
+301,13727,0,"Clark St & Schiller St",19,-87.631501,41.907993
+303,12264,0,"Broadway & Cornelia Ave",23,-87.646439,41.945529
+313,14483,0,"Lakeview Ave & Fullerton Pkwy",19,-87.638973,41.925858
+320,13228,0,"Loomis St & Lexington St",19,-87.661501,41.872187
+321,12607,0,"Wabash Ave & 9th St",19,-87.625734,41.870769
+331,15782,0,"Halsted St & Clybourn Ave",27,-87.648128,41.909668
+334,13467,0,"Lake Shore Dr & Belmont Ave",19,-87.639192,41.940775
+340,15503,0,"Clark St & Wrightwood Ave",15,-87.643118,41.929546
+341,16735,2,"Adler Planetarium",39,-87.607267,41.866095
+344,15123,0,"Ravenswood Ave & Lawrence Ave",47,-87.674237,41.96909
+623,14794,1,"Michigan Ave & 8th St",43,-87.623981,41.872773
+638,20904,0,"Clinton St & Jackson Blvd",23,-87.639838457,41.87811603
