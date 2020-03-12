@@ -1,11 +1,7 @@
-library(forecast)
 library(imputeTS)
 library(sqldf)
 library(RSocrata)
-library(skimr)
 library(MASS)
-library(xgboost)
-
 
 ### Extrapolate complete set of Trip Hours
 trip_hrs<-seq(as.POSIXct("2016-1-1 0:00",tz=""), as.POSIXct("2019-12-31 23:00",tz=""), by = "hour")
