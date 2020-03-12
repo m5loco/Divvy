@@ -1,0 +1,428 @@
+---
+title: "Divvy Model Results"
+author: "Mark Loula"
+date: "2/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load Functions and Data
+
+```{r}
+library(ggplot2)
+library(scales)
+library(dplyr)
+library(RSocrata)
+library(leaflet)
+
+setwd("c:/Users/Mark/documents/school/MSDS 498/fcst/")
+
+#stations<-read.socrata("https://data.cityofchicago.org/resource/bbyy-e7gq.json")
+stations<-read.csv("c:/Bike Data/stations.csv")
+stations$longitude<-as.numeric(stations$longitude)
+stations$latitude<-as.numeric(stations$latitude)
+
+get_scores<-function(station_id,station_name,custvsubs,station_docks,mdl,pred_counts,test_counts)
+{
+  #preds[preds<0]<-0 #####Predictions should not be less than zero
+  pred_ts<-ts(pred_counts)
+  test_ts<-ts(test_counts)
+  test_stats<-summary(test_ts)
+  pred_stats<-summary(pred_ts)
+  
+  results<-accuracy(pred_ts,test_ts)
+  scores<-data.frame(station_id=station_id,station_name=station_name,
+                     custvsubs=custvsubs,station_docks=station_docks,model=mdl,
+                     test_min=as.numeric(test_stats[1]),test_1q=as.numeric(test_stats[2]),
+                     test_med=as.numeric(test_stats[3]),test_mean=as.numeric(test_stats[4]),
+                     test_3q=as.numeric(test_stats[5]),test_max=as.numeric(test_stats[6]),
+                     pred_min=as.numeric(pred_stats[1]),pred_1q=as.numeric(pred_stats[2]),
+                     pred_med=as.numeric(pred_stats[3]),pred_mean=as.numeric(pred_stats[4]),
+                     pred_3q=as.numeric(pred_stats[5]),pred_max=as.numeric(pred_stats[6]),
+                     RMSE=results[,'RMSE'],MAE=results[,'MAE'],MAPE=results[,'MAPE'])
+  scores
+}
+
+source("base_fcst.R")
+
+setwd("c:/Users/Mark/documents/school/MSDS 498/fcst/")
+lm_results_df <- read.csv("lm_2019_preds.csv")
+xg_results_df <- read.csv("xg_2019_preds.csv")
+arima_results_df <- read.csv("arima_2019_preds.csv")
+nn_results_df <- read.csv("nnetar_2019_preds.csv")
+```
+
+Load Model Results and Impute Zeros
+
+```{r}
+all_results_df<-subset(top_df[top_df$start_year==2019,],select=c("station_id","trip_hour","start_year","start_month","start_day",
+                                                                "start_hour","start_day_of_week_no","cust_v_subs","total_docks",
+                                                                "hour_temp","hour_precip","holiday","cubs","bears",
+                                                                "sox","bhawks","count"))
+
+all_scores_df<- data.frame(station_id=numeric(),station_name=character(),
+                           custvsubs=numeric(),station_docks=numeric(),model=character(),
+                           test_min=numeric(),test_1q=numeric(),test_med=numeric(),test_mean=numeric(),
+                           test_3q=numeric(),test_3q=numeric(),test_max=numeric(),
+                           pred_min=numeric(),pred_1q=numeric(),pred_med=numeric(),pred_mean=numeric(),
+                           pred_3q=numeric(),pred_3q=numeric(),numeric(),ME=numeric(),RMSE=numeric(),MAE=numeric(),MAPE=numeric())
+
+all_results_df$full.lm<-lm_results_df$full.lm
+all_results_df$forward.lm<-lm_results_df$forward.lm
+#all_results_df$backward.lm<-lm_results_df$backward.lm
+#all_results_df$stepwise.lm<-lm_results_df$stepwise.lm
+all_results_df$poisson.glm<-lm_results_df$poisson.glm
+all_results_df$xg.ts<-xg_results_df$xg.ts
+all_results_df$arima.ts<-arima_results_df$arima.ts
+all_results_df$nnetar.ts<-nn_results_df$nnetar.ts
+
+all_res_i<-all_results_df
+
+all_res_i$full.lm<-ifelse(all_res_i$full.lm<0,0,all_res_i$full.lm)
+all_res_i$forward.lm<-ifelse(all_res_i$forward.lm<0,0,all_res_i$forward.lm)
+#all_res_i$backward.lm<-ifelse(all_res_i$backward.lm<0,0,all_res_i$backward.lm)
+#all_res_i$stepwise.lm<-ifelse(all_res_i$stepwise.lm<0,0,all_res_i$stepwise.lm)
+all_res_i$poisson.glm<-ifelse(all_res_i$poisson.glm<0,0,all_res_i$poisson.glm)
+all_res_i$xg.ts<-ifelse(all_res_i$xg.ts<0,0,all_res_i$xg.ts)
+all_res_i$arima.ts<-ifelse(all_res_i$arima.ts<0,0,all_res_i$arima.ts)
+all_res_i$nnetar.ts<-ifelse(all_res_i$nnetar.ts<0,0,all_res_i$nnetar.ts)
+
+rm(lm_results_df)
+rm(arima_results_df)
+rm(nn_results_df)
+rm(xg_results_df)
+```
+
+Record Accuracy Scores for each Model
+
+```{r}
+#models<-c("full.lm","forward.lm","backward.lm","stepwise.lm","poisson.glm","xg.ts","arima.ts","nnetar.ts")
+models<-c("full.lm","forward.lm","poisson.glm","xg.ts","arima.ts","nnetar.ts")
+#models<-c("full.lm","forward.lm","poisson.glm")
+
+for (station_id in top_stations_df$from_station_id)
+{
+  station_name<-top_stations_df[top_stations_df$from_station_id==station_id,"station_name"]
+  station_custvsubs<-top_stations_df[top_stations_df$from_station_id==station_id,"cust_v_subs"]
+  station_docks<-top_stations_df[top_stations_df$from_station_id==station_id,"total_docks"]
+  station_counts<-all_res_i[all_res_i$station_id==station_id,"count"]
+  
+  for (model in models)
+  {
+    all_scores_df<-rbind(all_scores_df,get_scores(station_id,station_name,station_custvsubs,station_docks,model,
+                                                  all_res_i[all_res_i$station_id==station_id,model],station_counts))
+  }
+}
+```
+
+
+
+```{r}
+#library("stargazer")
+#         a1.station_id as Id,
+#         a1.custvsubs as 'Cust v Subs',
+#         a1.station_docks as Docks,
+
+mdl_results<-
+         sqldf("SELECT
+         a1.station_id as Id,
+         a1.station_name as Station,
+         a1.custvsubs as 'Non-Subscriber Use',
+         max(a1.model) as 'Best Model',
+         round(a1.MAE,2) as MAE,
+         round(a1.pred_mean,2) as 'Pred Mean',
+         round(a1.test_mean,2) as 'Test Mean',
+         round(a1.pred_max,2) as 'Pred Max',
+         a1.test_max as 'Test Max'
+      FROM all_scores_df a1,
+           top_stations_df t
+      INNER JOIN
+      (SELECT station_id, MIN(MAE) as MIN_MAE
+      FROM all_scores_df
+      GROUP BY 1) a2
+      ON a1.MAE=a2.MIN_MAE
+      AND a1.station_id=a2.station_id
+      AND a1.station_id = t.from_station_id
+      group by 1,2,3,5,6,7,8,9
+      ORDER BY t.`count...` desc")
+
+mdl_results
+
+#library(DT)
+#library(gridExtra)
+#DT::datatable(mdl_results)
+#pdf("data_output.pdf", height=11, width=8.5)
+#grid.table(mdl_results)
+#dev.off()
+
+
+#out.path<-"c:/Users/Mark/documents/school/MSDS 498/fcst/"
+#file.name<-"model_results.html"
+#stargazer(mdl_results,type=c('html'),out=paste(out.path,file.name,sep=''),title=c('Divvy Hourly Demand Forecast Model Results'))
+```
+
+Map Function
+
+```{r}
+display_map<-function(stations,station_id)
+{
+  leaflet() %>%
+    addTiles()%>%
+    addMarkers(data=stations[stations$id==station_id,],
+               ~longitude,
+               ~latitude,
+               label=~station_name,
+               labelOptions = labelOptions(noHide = T, direction = "bottom"),
+               group="myMarkers")
+}
+```
+
+
+
+```{r}
+display_station_bp<-function(top_df,station_id)
+{
+  station_name<-stations[stations$id==station_id,"station_name"]
+  ggplot(data = top_df[top_df$station_id==station_id,], aes(x = "", y = count)) + 
+    geom_boxplot(width=0.25) +
+    coord_flip() + ylab("Trips") + xlab("") + ggtitle(paste("Distribution of Trips for ",station_name,sep=""))
+}
+```
+
+Re-fit model
+
+```{r}
+get_poisson_mdl<-function(station_id,top_df,model_vars)
+{
+  test_results_df<-subset(top_df[top_df$start_year==2019,],
+                          select=c("station_id","trip_hour"))
+
+  station_trips_df<-top_df[top_df$station_id == station_id,]
+  station_train_df<-station_trips_df[station_trips_df$start_year<2019,]
+  station_test_df<-station_trips_df[station_trips_df$start_year==2019,]
+  station_train_df$count_i<-station_trips_df[station_trips_df$start_year<2019,"count"]
+  station_train_df<-subset(station_train_df,select=model_vars)
+  
+  
+  ###Full LM Model
+  full.lm <- lm(count_i ~ . ,data=station_train_df)
+  full_preds<-predict(full.lm,newdata=station_test_df)
+  test_results_df[test_results_df$station_id==station_id,"full.lm"]<-full_preds
+  
+  ###Forward Selection Model
+  lower.lm <- lm(count_i ~ 1,data=station_train_df)
+  forward.lm <- stepAIC(object=lower.lm,scope=list(upper=full.lm,lower=lower.lm),direction=c('forward'),trace=0);
+  forward_preds<-predict(forward.lm,newdata=station_test_df)
+  test_results_df[test_results_df$station_id==station_id,"forward.lm"]<-forward_preds
+  
+  ###GLM Models - Use coefficients selected by stepwise selection
+  glm_vars<-rownames(summary(forward.lm)$coefficients)
+  glm_vars<-glm_vars[!glm_vars=='(Intercept)']
+  
+  ###Poisson
+  poisson.glm <- glm(count_i ~ ., family="poisson"(link="log"), data=subset(station_train_df,select=c("count_i",glm_vars)))
+  poisson.glm
+}
+```
+
+Not sure what to do with stargazer
+
+```{r}
+#library(stargazer)
+#out.path<-"c:/Users/Mark/documents/school/MSDS 498/fcst/"
+#file.name<-paste("model_summary_",station_id,".html",sep="")
+#stargazer(mdl,type=c('html'),out=paste(out.path,file.name,sep=''),title=c(paste("Poisson Model Summary for:",station_name,sep="")),
+#          align=TRUE, digits=2, digits.extra=2, initial.zero=TRUE,
+#          intercept.bottom = FALSE)
+```
+
+Display Forecast
+
+```{r}
+display_forecast<-function(station_id,start_date,end_date,all_res_i)
+{
+  start_date<-as.POSIXct(start_date)
+  lbl_end_date<-end_date
+  end_date<-as.POSIXct(paste(end_date, " 23",sep=""),format="%Y-%m-%d %H")
+
+  df<-all_res_i[all_res_i$trip_hour>start_date & all_res_i$trip_hour<end_date & all_res_i$station_id==station_id,]
+
+  station_name<-top_stations_df[top_stations_df$from_station_id==station_id,"station_name"]
+  test_ts<-ts(all_res_i[all_res_i$trip_hour>start_date & all_res_i$trip_hour<end_date &
+                          all_res_i$station_id==station_id,"count"],frequency=15)
+  poisson_ts<-ts(all_res_i[all_res_i$trip_hour>start_date & all_res_i$trip_hour<end_date &
+                             all_res_i$station_id==station_id,"poisson.glm"],frequency=15)
+
+  all_hours<-data.frame(trip_hour = seq.POSIXt(from = start_date, to = end_date, by = "hour"))
+  df_complete <- left_join(all_hours,df, by = "trip_hour")
+  df_complete<-subset(df_complete,select=c("trip_hour","count","poisson.glm"))
+
+  ggplot() +
+    geom_line(data=df_complete,aes(trip_hour,count, color="Actuals")) +
+    geom_line(data=df_complete,aes(trip_hour,poisson.glm, color="Predictions")) + 
+    scale_x_datetime(date_labels = "%a %d",date_breaks="1 day")+
+    xlab("By Hour") + ylab("Trips") +
+    theme(axis.text.x = element_text(angle = 90),axis.title=element_text(size=8),legend.title=element_text(size=8)) +
+    scale_color_manual(name = "Lines", values = c("Actuals" = "darkblue", "Predictions" = "darkred")) +
+    ggtitle(paste("Forecast: ",start_date," to ",lbl_end_date," for ",station_name,sep=""))
+}
+```
+
+```{r}
+subset(mdl_results,Id==35|Id==81|Id==67|Id==114)
+```
+
+```{r}
+#Set Station Params
+station_id=35
+```
+
+```{r}
+#Display Map
+display_map(stations,station_id)
+```
+
+```{r}
+#Display Station Trips Box Plot
+display_station_bp(top_df,station_id)
+```
+
+
+
+```{r}
+# Display Model Stats
+summary(get_poisson_mdl(station_id,top_df,model_vars))
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-03-17","2019-03-23",all_res_i)
+```
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-06-30","2019-07-06",all_res_i)
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-09-22","2019-09-28",all_res_i)
+```
+```{r}
+#Set Station Params
+station_id=81
+```
+
+```{r}
+#Display Map
+display_map(stations,station_id)
+```
+
+```{r}
+#Display Station Trips Box Plot
+display_station_bp(top_df,station_id)
+```
+
+```{r}
+# Display Model Stats
+summary(get_poisson_mdl(station_id,top_df,model_vars))
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-03-17","2019-03-23",all_res_i)
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-06-30","2019-07-06",all_res_i)
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-09-22","2019-09-28",all_res_i)
+```
+
+```{r}
+#Set Station Params
+station_id=67
+```
+
+```{r}
+#Display Map
+display_map(stations,station_id)
+```
+
+```{r}
+#Display Station Trips Box Plot
+display_station_bp(top_df,station_id)
+```
+
+```{r}
+# Display Model Stats
+summary(get_poisson_mdl(station_id,top_df,model_vars))
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-03-17","2019-03-23",all_res_i)
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-06-30","2019-07-06",all_res_i)
+```
+```{r}
+
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-09-22","2019-09-28",all_res_i)
+```
+
+```{r}
+#Set Station Params
+station_id=114
+```
+
+```{r}
+#Display Map
+display_map(stations,station_id)
+```
+
+```{r}
+#Display Station Trips Box Plot
+display_station_bp(top_df,station_id)
+```
+
+```{r}
+# Display Model Stats
+summary(get_poisson_mdl(station_id,top_df,model_vars))
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-03-17","2019-03-23",all_res_i)
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-06-30","2019-07-06",all_res_i)
+```
+
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-09-22","2019-09-28",all_res_i)
+```
+```{r}
+#Display Forecast for Time Period
+display_forecast(station_id,"2019-06-22","2019-06-29",all_res_i)
+```
+```{r}
+ mean(all_scores_df[all_scores_df$model=='poisson.glm',"MAE"])
+ nrow(mdl_results[mdl_results$`Best Model`=='poisson.glm',])
+ mean(all_res_i$count)
+```
