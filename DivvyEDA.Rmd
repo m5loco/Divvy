@@ -1,0 +1,349 @@
+---
+title: "Divvy EDA"
+author: "Mark Loula"
+date: "1/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Libraries
+
+```{r}
+library(sqldf)
+library(ggplot2)
+library(scales)
+library(fpp2)
+```
+
+## Set Home Directory and Constants
+
+```{r}
+# ####Standardized column names
+# cnames<-c("trip_id","start_time","end_time","bikeid","tripduration","from_station_id",
+#           "from_station_name","to_station_id","to_station_name","usertype","gender","birthyear")
+# ```
+# 
+# ## Define Functions
+# 
+# ```{r echo=FALSE}
+# ####Special data type class to handle numbers with commas
+# setClass("num.with.commas")
+# setAs("character", "num.with.commas",
+#       function(from) as.numeric(gsub(",", "", from) ) )
+# 
+# ####Function to load file in dataframe, converting to POSIXct after load is faster
+# read_trip_file<-function(filename,cnames)
+# {
+#   
+#   ctypes<-c("numeric","POSIXct","POSIXct","numeric","num.with.commas","numeric","character","numeric",
+#             "character","factor","factor","numeric")
+#   
+#   file_df<-read.csv(filename,col.names=cnames,colClasses=ctypes)
+#   file_df$file<-filename
+#   file_df
+# }
+# 
+# ####Function to load file in dataframe, converting to POSIXct after load is faster
+# read_trip_file_1<-function(filename,cnames)
+# {
+# 
+#   ctypes<-c("numeric","character","character","numeric","num.with.commas","numeric","character","numeric",
+#             "character","factor","factor","numeric")
+#   
+#   file_df<-read.csv(filename,col.names=cnames,colClasses=ctypes)
+#   file_df$start_time<-as.POSIXct(file_df$start_time,tz="",format=c("%m/%d/%Y %H:%M"))
+#   file_df$end_time<-as.POSIXct(file_df$end_time,tz="",format=c("%m/%d/%Y %H:%M"))
+#   file_df$file<-filename
+#   file_df
+# }
+# 
+# ####Function to load file into dataframe, handles issue with numbers
+# read_trip_file_2<-function(filename,cnames)
+# {
+#   ctypes<-c("character","character","character","character","num.with.commas","character","character","character",
+#             "character","factor","factor","character")
+#   
+#   file_df <- read.csv(filename,col.names=cnames,colClasses=ctypes)
+#   file_df$trip_id<-as.numeric(file_df$trip_id)
+#   file_df$start_time<-as.POSIXct(file_df$start_time,tz="",format=c("%m/%d/%Y %H:%M"))
+#   file_df$end_time<-as.POSIXct(file_df$end_time,tz="",format=c("%m/%d/%Y %H:%M"))
+#   file_df$bikeid<-as.numeric(file_df$bikeid)
+#   file_df$from_station_id<-as.numeric(file_df$from_station_id)
+#   file_df$to_station_id<-as.numeric(file_df$to_station_id)
+#   file_df$birthyear<-as.numeric(file_df$birthyear)
+#   file_df$file<-filename
+#   file_df
+# }
+```
+
+## Load Data Files and Combine
+
+```{r}
+setwd("C:/Bike Data")
+# trips_19_Q4 <- read_trip_file("Divvy_Trips_2019_Q4.csv",cnames)
+# trips_19_Q3 <- read_trip_file("Divvy_Trips_2019_Q3.csv",cnames)
+# trips_19_Q2 <- read_trip_file("Divvy_Trips_2019_Q2.csv",cnames)
+# trips_19_Q1 <- read_trip_file("Divvy_Trips_2019_Q1.csv",cnames)
+# trips_18_Q4 <- read_trip_file("Divvy_Trips_2018_Q4.csv",cnames)
+# trips_18_Q3 <- read_trip_file("Divvy_Trips_2018_Q3.csv",cnames)
+# trips_18_Q2 <- read_trip_file("Divvy_Trips_2018_Q2.csv",cnames)
+# trips_18_Q1 <- read_trip_file("Divvy_Trips_2018_Q1.csv",cnames)
+# trips_17_Q4 <- read_trip_file_1("Divvy_Trips_2017_Q4.csv",cnames)
+# trips_17_Q3 <- read_trip_file_2("Divvy_Trips_2017_Q3.csv",cnames)
+# trips_17_Q2 <- read_trip_file_2("Divvy_Trips_2017_Q2.csv",cnames)
+# trips_17_Q1 <- read_trip_file_2("Divvy_Trips_2017_Q1.csv",cnames)
+# trips_16_Q4 <- read_trip_file_2("Divvy_Trips_2016_Q4.csv",cnames)
+# trips_16_Q3 <- read_trip_file_2("Divvy_Trips_2016_Q3.csv",cnames)
+# trips_16_Q2 <- rbind(read_trip_file_2("Divvy_Trips_2016_04.csv",cnames),
+#                      read_trip_file_2("Divvy_Trips_2016_05.csv",cnames),
+#                      read_trip_file_2("Divvy_Trips_2016_06.csv",cnames))
+# trips_16_Q1 <- read_trip_file_2("Divvy_Trips_2016_Q1.csv",cnames)
+# # 
+#  trips_all <- rbind(trips_19_Q4,trips_19_Q3,trips_19_Q2,trips_19_Q1,trips_18_Q4,trips_18_Q3,trips_18_Q2,trips_18_Q1,trips_17_Q4,
+#                     trips_17_Q3,trips_17_Q2,trips_17_Q1,trips_16_Q4,trips_16_Q3,trips_16_Q2,trips_16_Q1)
+```
+
+## Add Extra Columns
+
+```{r}
+# setwd("C:/Bike Data")
+# write.csv(trips_all,"trips2016-2019.csv", row.names = FALSE)
+cnames<-c("trip_id","start_time","end_time","bikeid","tripduration","from_station_id",
+          "from_station_name","to_station_id","to_station_name","usertype","gender","birthyear","filename")
+
+ctypes<-c("numeric","POSIXct","POSIXct","numeric","numeric","numeric","character","numeric",
+          "character","factor","factor","numeric","character")
+
+trips_all<-read.csv("C:/Bike Data/trips2016-2019.csv",col.names=cnames,colClasses=ctypes)
+```
+
+
+```{r}
+trips_all$start_date <- as.Date(trips_all$start_time)
+trips_all$start_year <- strftime(trips_all$start_time,'%Y')
+trips_all$start_month <- as.numeric(format(trips_all$start_time,format='%m'))
+trips_all$start_day <- as.numeric(format(trips_all$start_time,format='%d'))
+trips_all$start_hour <- as.numeric(format(trips_all$start_time,format='%H'))
+trips_all$start_day_of_week <- format(trips_all$start_time,format='%a')
+trips_all$start_day_of_week_no <- format(trips_all$start_time,format='%w')
+```
+
+## Query Counts by Day
+
+```{r}
+trips_by_day<-sqldf("select start_date,count(*) as count from trips_all where start_date is not null group by 1 order by 1")
+trips_by_day$start_year <- strftime(trips_by_day$start_date,'%Y')
+trips_by_day$start_month <- as.numeric(format(trips_by_day$start_date,format='%m'))
+trips_by_day$start_day <- as.numeric(format(trips_by_day$start_date,format='%d'))
+trips_by_day$start_day_of_week <- format(trips_by_day$start_date,format='%a')
+trips_by_day$start_day_of_week_no <- format(trips_by_day$start_date,format='%w')
+ 
+ts_by_day<-ts(trips_by_day$count,start=c(2016,1,1),frequency=365.25)
+autoplot(ts_by_day) + ggtitle("Rides - 2016-2019 ") + ylab("Rentals") + xlab("Day")
+```
+
+## Query Counts by Year
+
+```{r}
+trips_by_year<-sqldf("select start_year,count(*) as count from trips_all group by 1 order by 1")
+barplot(trips_by_year$count,names.arg=trips_by_year$start_year,main="Total Rentals by Year")
+```
+
+## Query Counts by Month
+
+```{r}
+month_years<-sqldf("select start_year,start_month from trips_by_day group by 1,2")
+total_months<-sqldf("select start_month,count(*) as count from month_years group by 1 order by 1")
+trips_by_month<-sqldf("select start_month,count(*) as count from trips_all group by 1 order by 1")
+trips_by_month_avg<-trips_by_month$count/total_months$count
+barplot(trips_by_month_avg,names.arg=c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'),
+        main="Average Rentals By Month",yaxt="n")
+marks = axTicks(2)
+axis(2, at = marks, labels = format(marks,scientific=FALSE))
+```
+
+
+```{r}
+ggplot(data=trips_by_month, aes(x=start_month, y=count)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Month") +
+  xlab("Month") + ylab("Count") + scale_x_discrete(limits=month.abb)
+```
+
+## Query by Day of the Week
+
+```{r}
+trips_by_day_of_week<-sqldf("select start_day_of_week_no,count(*) as count from trips_all group by 1")
+barplot(trips_by_day_of_week$count,names.arg=c('Su','Mo','Tu','We','Th','Fr','Sa'),main="Rentals by Day of Week")
+```
+
+```{r}
+ggplot(data=trips_by_day_of_week, aes(x=start_day_of_week_no, y=count)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Day") +
+  xlab("Day") + ylab("Count") + scale_x_discrete(labels=c('Su','Mo','Tu','We','Th','Fr','Sa'))
+```
+
+## Query by Day of Week in Summer (Average)
+
+```{r}
+summer_days<-sqldf("select start_day_of_week_no,count(*) as count from trips_by_day where start_month in (6,7,8) group by 1")
+trips_by_day_of_week_summer<-sqldf("select start_day_of_week_no,count(*) as count from trips_all where start_month in (6,7,8) group by 1")
+trips_by_day_of_week_summer_avg<-trips_by_day_of_week_summer$count/summer_days$count
+barplot(trips_by_day_of_week_summer_avg,names.arg=c('Su','Mo','Tu','We','Th','Fr','Sa'),main="Average Rentals by Day during the Summer")
+```
+```{r}
+ggplot(data=trips_by_day_of_week_summer, aes(x=start_day_of_week_no, y=count)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Day - Summer") +
+  xlab("Day") + ylab("Count") + scale_x_discrete(labels=c('Su','Mo','Tu','We','Th','Fr','Sa'))
+```
+
+
+```{r}
+trips_by_hour<-sqldf("select start_hour,count(*) as count from trips_all group by 1")
+barplot(trips_by_hour$count,main="Rentals by Hour",names.arg=trips_by_hour$start_hour)
+```
+```{r}
+ggplot(data=trips_by_hour, aes(x=start_hour, y=count)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Hour") +
+  xlab("Hour") + ylab("Count") + scale_x_discrete(limits=trips_by_hour$start_hour)
+```
+
+## Start Analyzing People
+
+```{r}
+trips_all$start_year<-as.numeric(trips_all$start_year)
+trips_all$age<-trips_all$start_year-trips_all$birthyear
+trips_all$age_group<-NA
+trips_all[which(trips_all$age<1),"age_group"]<-"0"
+trips_all[which(trips_all$age>0 & trips_all$age<6),"age_group"]<-"01-05"
+trips_all[which(trips_all$age>5 & trips_all$age<14),"age_group"]<-"06-13"
+trips_all[which(trips_all$age>13 & trips_all$age<18),"age_group"]<-"14-17"
+trips_all[which(trips_all$age>17 & trips_all$age<23),"age_group"]<-"18-22"
+trips_all[which(trips_all$age>22 & trips_all$age<30),"age_group"]<-"20s"
+trips_all[which(trips_all$age>29 & trips_all$age<40),"age_group"]<-"30s"
+trips_all[which(trips_all$age>39 & trips_all$age<50),"age_group"]<-"40s"
+trips_all[which(trips_all$age>49 & trips_all$age<60),"age_group"]<-"50s"
+trips_all[which(trips_all$age>59 & trips_all$age<70),"age_group"]<-"60s"
+trips_all[which(trips_all$age>69),"age_group"]<-"70+"
+
+trips_all[which(trips_all$age<1),"age_group_no"]<-as.numeric(NA)
+trips_all[which(trips_all$age<1),"age_group_no"]<-0
+trips_all[which(trips_all$age>0 & trips_all$age<6),"age_group_no"]<-1
+trips_all[which(trips_all$age>5 & trips_all$age<14),"age_group_no"]<-2
+trips_all[which(trips_all$age>13 & trips_all$age<18),"age_group_no"]<-3
+trips_all[which(trips_all$age>17 & trips_all$age<23),"age_group_no"]<-4
+trips_all[which(trips_all$age>22 & trips_all$age<30),"age_group_no"]<-5
+trips_all[which(trips_all$age>29 & trips_all$age<40),"age_group_no"]<-6
+trips_all[which(trips_all$age>39 & trips_all$age<50),"age_group_no"]<-7
+trips_all[which(trips_all$age>49 & trips_all$age<60),"age_group_no"]<-8
+trips_all[which(trips_all$age>59 & trips_all$age<70),"age_group_no"]<-9
+trips_all[which(trips_all$age>69),"age_group_no"]<-10
+```
+
+```{r}
+options(scipen=10000)
+age_df<-sqldf("select age_group_no,age_group, count(*) as count from trips_all group by 1,2 order by 1")
+ggplot(data=age_df, aes(x=age_group, y=count)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Age") +
+  xlab("Age") + ylab("Count") + theme_minimal()
+
+```
+
+```{r}
+age_type_df<-sqldf("select age_group_no,age_group,usertype as Type, count(*) as count from trips_all where usertype <> 'Dependent' group by 1,2,3 order by 1,3")
+ggplot(data=age_type_df, aes(x=age_group, y=count, fill=Type)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Age and Type") +
+  xlab("Age") + ylab("Count") + theme_minimal()
+```
+
+```{r}
+age_gender_df<-sqldf("select age_group_no,age_group,gender as Gender, count(*) as count from trips_all group by 1,2,3 order by 1,3")
+age_gender_df$Gender<-ifelse(is.na(age_gender_df$Gender),'None',age_gender_df$Gender)
+ggplot(data=age_gender_df, aes(x=age_group, y=count, fill=Gender)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Age and Gender") +
+  xlab("Age") + ylab("Count")
+```
+
+```{r}
+hour_gender_df<-sqldf("select start_hour,gender as Gender, count(*) as count from trips_all group by 1,2 order by 1,2")
+ggplot(data=hour_gender_df, aes(x=start_hour, y=count, fill=Gender)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Time and Gender") +
+  xlab("Hour") + ylab("Count") + scale_x_discrete(limits=hour_gender_df$start_hour)
+```
+
+```{r}
+hour_mf_df<-sqldf("select start_hour,gender as Gender, count(*) as count 
+                  from trips_all where gender in ('Male','Female') group by 1,2 order by 1,2")
+ggplot(data=hour_mf_df, aes(x=start_hour, y=count, fill=Gender)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Time and Gender Defined") +
+  xlab("Hour") + ylab("Count") + scale_x_discrete(limits=hour_mf_df$start_hour)
+```
+
+
+```{r}
+hour_nogender_df<-sqldf("select start_hour,gender as Gender, count(*) as count 
+                        from trips_all where gender not in ('Male','Female') group by 1,2 order by 1,2")
+ggplot(data=hour_nogender_df, aes(x=start_hour, y=count, fill=Gender)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by Time, No Gender Defined") +
+  xlab("Hour") + ylab("Count") + scale_x_discrete(limits=hour_nogender_df$start_hour)
+```
+
+
+```{r}
+users_by_mo_df<-sqldf("select start_month,usertype as Type, count(*) as count
+                      from trips_all where usertype <> 'Dependent' group by 1,2 order by 1,2")
+
+ggplot(data=users_by_mo_df, aes(x=start_month, y=count, fill=Type)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by User Type By Month") +
+  xlab("Month") + ylab("Count") + scale_x_discrete(limits=month.abb)
+```
+```{r}
+users_by_hour_df<-sqldf("select start_hour,usertype as Type, count(*) as count
+                      from trips_all where usertype <> 'Dependent' group by 1,2 order by 1,2")
+
+ggplot(data=users_by_hour_df, aes(x=start_hour, y=count, fill=Type)) +
+  geom_bar(stat="identity", position=position_dodge()) + ggtitle("Trips by User Type By Hour") +
+  xlab("Hour") + ylab("Count") + scale_x_discrete(limits=users_by_hour_df$start_hour)
+```
+
+```{r}
+type_by_station_df <-sqldf("select from_station_id,from_station_name,usertype,count(*) as count from trips_all
+      where usertype <> 'Dependent' group by 1,2,3")
+
+type_by_station_comp_df <-sqldf("select t1.from_station_name, t1.count as customer, t2.count as subscriber,
+t1.count/t2.count as ratio from type_by_station_df t1, type_by_station_df t2 where t1.from_station_name = t2.from_station_name and t1.usertype='Customer' and t2.usertype='Subscriber' order by 4 desc")
+
+
+
+```
+
+```{r}
+sqldf("select from_station_name,customer,subscriber,ratio
+from  type_by_station_comp_df order by 2 desc")
+```
+```{r}
+library(RSocrata)
+library(leaflet)
+
+stations<-read.socrata("https://data.cityofchicago.org/resource/bbyy-e7gq.json") 
+stations$longitude<-as.numeric(stations$longitude)
+stations$latitude<-as.numeric(stations$latitude)
+
+stations$cust_rides<-type_by_station_comp_df[match(stations$station_name,type_by_station_comp_df$from_station_name),"customer"]
+stations$subs_rides<-type_by_station_comp_df[match(stations$station_name,type_by_station_comp_df$from_station_name),"subscriber"]
+stations$cust_v_subs<-type_by_station_comp_df[match(stations$station_name,type_by_station_comp_df$from_station_name),"ratio"]
+
+top_cust_stations<-sqldf("select station_name,cust_rides,subs_rides,cust_v_subs, longitude,latitude
+from stations order by 2 desc limit 30")
+
+leaflet() %>%
+  addTiles()%>%
+  addMarkers(data=top_cust_stations,
+             ~longitude,
+             ~latitude,
+             label=~station_name,
+             group="myMarkers")
+```
+
