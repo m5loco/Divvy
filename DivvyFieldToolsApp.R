@@ -22,7 +22,7 @@ library(measurements)
 default_station<-"Canal St & Adams St"
 default_date<-Sys.Date()
 
-Sys.setenv(TZ='GMT')
+Sys.setenv(TZ='GMT') ######Shiny.io servers run in GMT, this simulates running on the server, remove prior to deplying app to server
 offset<-5
 chi_tzone<-'America/Chicago'
 
@@ -59,8 +59,7 @@ cal_df$holiday<-as.integer(cal_df$holiday)
 coeff_names<-names(station_coeff_df)
 coeff_names<-coeff_names[!coeff_names=='station_id']
 
-####Use Chicago Lat/Long for forecast
-
+####Use Chicago Lat/Long for forecast, second station is because sometimes station is down
 tryCatch(
   {
     lat<-41.876511229
